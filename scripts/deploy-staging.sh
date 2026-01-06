@@ -1,6 +1,13 @@
 #!/bin/bash
-docker pull yourdockerhub/backend:latest
-docker pull yourdockerhub/frontend:latest
+set -e
 
-docker-compose down
-docker-compose up -d
+echo "🚀 Starting STAGING deployment..."
+
+docker pull siyo22/backend:staging
+docker pull siyo22/frontend:staging
+
+docker compose -f docker-compose.staging.yml down
+docker compose -f docker-compose.staging.yml up -d
+
+echo "✅ Staging deployment completed"
+docker ps

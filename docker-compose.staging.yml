@@ -1,32 +1,38 @@
-services:
-  db:
-    image: postgres:15
-    container_name: postgres-db
-    env_file:
-      - .env
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
+version: "3.8"
 
+services:
   backend:
-    image: siyo22/backend:latest
+    image: siyo22/backend:staging
     container_name: backend
     ports:
       - "5000:5000"
-    env_file:
-      - .env
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 5432
     depends_on:
       - db
 
   frontend:
-    build: ./frontend
+    image: siyo22/frontend:staging
     container_name: frontend
     ports:
       - "8081:80"
     depends_on:
       - backend
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   pgdata:
